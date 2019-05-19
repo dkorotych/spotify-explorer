@@ -1,0 +1,146 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+source("init.R")
+
+MAX_RESULTS = 50
+access_token <- get_spotify_access_token()
+
+recent <- get_my_recently_played(limit = MAX_RESULTS)
+
+length(unlist(artists$genres, recursive = F))
+unique(unlist(artists$genres, recursive = F))
+```
+
+```{r}
+user_name = strsplit(get_my_profile()$display_name, ' ')[[1]]
+if (length(user_name) > 1) user_name = user_name[1]
+user_name
+```
+
+
+```{r}
+top_a <- get_my_top_artists_or_tracks(type = "artists", limit = MAX_RESULTS)
+top_artists_genres <- sort(table(unlist(top_a$genres, recursive = F)), decreasing = T)
+head(top_artists_genres)
+```
+```{r}
+artists <- get_my_followed_artists(limit = MAX_RESULTS)
+artists_genres <- sort(table(unlist(artists$genres, recursive = F)), decreasing = T)
+head(artists_genres, 8)
+```
+
+Scaling album feature contribution by the number of tracks from the album that appear in user top tracks.
+Average of those characteristics is used to describe an artist.
+
+```{r}
+library('dplyr')
+
+top_t_artists <- unique(unlist(lapply(1:nrow(top_t), 
+    function(i) top_t[i,'artists'][[1]]['name'])))
+
+ids <- c('artist_id', 'album_id', 'track_id')
+feats <- c('album_release_year', 'tempo', 'danceability', 'energy', 'key', 'loudness', 
+           'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence')
+a_feats <- c('artist_name', feats)
+# not preallocating nrow = length(top_t_artists)
+top_artists_feats <- data.frame()#matrix(rep(0, length(top_t_artists) * length(a_feats)), ncol = length(a_feats)))
+
+
+for (i in 1:length(unique(top_a[,'name']))) {
+    
+    tryCatch({
+        artist <- get_artist_audio_features(unique(top_a[,'name'])[i])
+    }, warning = function(w) {
+        message(w)
+    }, error = function(e) {
+        message(e)
+    })
+    
+    #print(paste(i, nrow(artist), ' - '))
+    
+    # artist tracks in your top tracks
+    d <- artist[artist[,'track_href'] %in% top_t[,'href'], c(ids, feats)]
+    
+    if (nrow(d) > 0) {
+        artist_name <- names(table(artist[,'artist_name'])[1])
+        top_artists_feats <- rbind(top_artists_feats, c(artist_name, colMeans(d[,feats])))
+    }
+}
+
+colnames(top_artists_feats) <- a_feats
+write.csv("fav-artists.csv", x = top_artists_feats)
+```
+
+
+
+```{r}
+artist <- get_artist_audio_features(top_a[1,'name'])
+```
+
+
+
+
+
+
+
+```{r}
+top_t <- get_my_top_artists_or_tracks(type = "tracks", limit = MAX_RESULTS)
+
+fivenum(top_t$popularity)
+#artists_genres <- sort(table(unlist(top_t$genres, recursive = F)), decreasing = T)
+#head(artists_genres)
+```
+
+```{r}
+# library(ggplot2)
+# # Basic histogram
+# ggplot(top_t, aes(x=popularity)) + geom_histogram()
+# # Change the width of bins
+# ggplot(top_t, aes(x=popularity)) + 
+#   geom_histogram(binwidth=1)
+# # Change colors
+# p<-ggplot(top_t, aes(x=popularity)) + 
+#   geom_histogram(color="black", fill="white")\
+
+library(highcharter)
+track_popularity <- top_t$popularity
+names(track_popularity) <- "Track Popularity"
+hchart(track_popularity) 
+```
+```{r}
+hchart(top_a$followers.total) 
+```
+
+```{r}
+hchart(top_a$popularity) 
+```
+
+```{r}
+hchart(do.call(rbind, strsplit(unlist(top_t$album.release_date), '-'))[,1]) 
+```
+
+```{r}
+known_tracks <- unlist(top_t$id)#unlist(top_t$name)
+```
+```{r}
+spotify_artist_top_tracks <- sapply(unlist(top_a$id), function(x) get_artist_top_tracks(x)[,'id'])
+spotify_artist_top_tracks <- unique(unlist(spotify_artist_top_tracks))
+```
+
+
+
+```{r}
+d <- spotifyr::get_artist_top_tracks()
+spotifyr::get_featured_playlists()
+spotifyr::get_genre_artists()
+spotifyr::get_artist_top_tracks()
+spotifyr::get_new_releases()
+spotifyr::get_category_playlists()
+```
+

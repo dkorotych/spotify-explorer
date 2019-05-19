@@ -1,0 +1,17 @@
+{
+  "name": "Interactive PCA Explorer",
+  "stack": "heroku-16",
+  "repository": "https://github.com/ai-protagonist/spotify-explorer",
+  "keywords": [
+    "R",
+    "Shiny"
+  ],
+  "addons": [
+    "papertrail:choklad"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/virtualstaticvoid/heroku-buildpack-r.git#heroku-16"
+    }
+  ]
+}
