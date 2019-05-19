@@ -2,7 +2,7 @@
   "name": "Spotify PCA Explorer",
   "stack": "heroku-16",
   "repository": "https://github.com/ai-protagonist/spotify-explorer",
-  "description:: "Simple analyzer for your Spotify data",
+  "description": "Simple analyzer for your Spotify data",
   "keywords": [
     "R",
     "Shiny"
