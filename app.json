@@ -1,7 +1,8 @@
 {
-  "name": "Interactive PCA Explorer",
+  "name": "Spotify PCA Explorer",
   "stack": "heroku-16",
   "repository": "https://github.com/ai-protagonist/spotify-explorer",
+  "description:: "Simple analyzer for your Spotify data",
   "keywords": [
     "R",
     "Shiny"
@@ -13,5 +14,13 @@
     {
       "url": "https://github.com/virtualstaticvoid/heroku-buildpack-r.git#heroku-16"
     }
-  ]
+  ],
+  "env": {
+    "SPOTIFY_CLIENT_ID": {
+      "description": "Client ID is the unique identifier of your application. You can find it on Spotify developer dashboard",
+    },
+    "SPOTIFY_CLIENT_SECRET": {
+      "description": "Client Secret is the key that you pass in secure calls to the Spotify Accounts and Web API services. You can find it on Spotify developer dashboard",
+    }
+  }
 }
