@@ -5,7 +5,8 @@
   "description": "Simple analyzer for your Spotify data",
   "keywords": [
     "R",
-    "Shiny"
+    "Shiny",
+    "Spotify"
   ],
   "addons": [
     "papertrail:choklad"
@@ -18,9 +19,11 @@
   "env": {
     "SPOTIFY_CLIENT_ID": {
       "description": "Client ID is the unique identifier of your application. You can find it on Spotify developer dashboard",
+      "required": true
     },
     "SPOTIFY_CLIENT_SECRET": {
       "description": "Client Secret is the key that you pass in secure calls to the Spotify Accounts and Web API services. You can find it on Spotify developer dashboard",
+      "required": true
     }
   }
 }
